@@ -33,6 +33,7 @@ Because a lot of .sub files in subghz database contain RAW files, it would be po
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
+- https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
 - Flipper Zero .sub files support
 - More functions, possibilities...
