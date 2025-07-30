@@ -21,7 +21,7 @@ You can use simple ASK TX module, like fs1000a or something similar, I used some
 
 ![TX](images/TX.png)
 # Receiver circuit
-Like for transmitting, there are also cheap modules for reception of ASK modulation, like XY-MK-5V. I used different type with PT4317 superheterodyne receiver chip, that could theoretically work also on 315MHz, but I would need to replace SAW resonator. I connected this module data input to GPIO_25 and 3.3V supply.
+Like for transmitting, there are also cheap modules for reception of ASK modulation, like XY-MK-5V. I used different type with PT4317 superheterodyne receiver chip, that could theoretically work also on 315MHz, but I would need to replace SAW resonator. I connected this module data output to GPIO_25 and 3.3V supply.
 
 ![RX](images/RX.png)
 # Subghz file support
