@@ -29,7 +29,7 @@ Like for transmitting, there are also cheap modules for reception of ASK modulat
 
 Image of simple receiver
 # Subghz file support
-Because a lot of .sub files in subghz database contain RAW files, it would be possible to use them with these cheap ASK modules, there are some protocols like Chamberlain, Princeton etc. and these can definitelly be added too. Problems can arise, when the lenght is too much to handle for pigpio library and memory of raspberry pi.
+Because a lot of .sub files in subghz database contain RAW files, it would be possible to use them with these cheap ASK modules, there are some protocols like Chamberlain, Princeton etc. and these can definitelly be added too. Problems can arise, when the lenght is too much to handle for pigpio library and memory of raspberry pi. I will try to add some converter code.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
