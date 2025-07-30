@@ -20,10 +20,12 @@ It will enable pigpiod and throw you to menu, where you can choose some options,
 You can use simple ASK TX module, like fs1000a or something similar, I used some random ASK transmitter with two SMD RF transisotrs labeled "2D". I wanted the frequency to be very precise, so I used SAW resonator with label 433.92 meaning 433.92MHz and replaced the previous one. I connected this module data input to GPIO_13 and 5V supply.
 
 ![TX](images/TX.png)
+Image of simple transmitter
 # Receiver circuit
 Like for transmitting, there are also cheap modules for reception of ASK modulation, like XY-MK-5V. I used different type with PT4317 superheterodyne receiver chip, that could theoretically work also on 315MHz, but I would need to replace SAW resonator. I connected this module data output to GPIO_25 and 3.3V supply.
 
 ![RX](images/RX.png)
+Image of simple receiver
 # Subghz file support
 Because a lot of .sub files in subghz database contain RAW files, it would be possible to use them with these cheap ASK modules, there are some protocols like Chamberlain, Princeton etc. and these can definitelly be added too. Problems can arise, when the lenght is too much to handle for pigpio library and memory of raspberry pi.
 # External references
