@@ -1,5 +1,5 @@
 #!/bin/bash
-#Script uses whiptail to create "user friendly" interface
+# Script uses whiptail to create "user friendly" interface, similar to TV-B-Gone menu.
 
 # === File and GPIO configuration ===
 RFRP_SCRIPT="rfrp.py"
