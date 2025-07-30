@@ -3,11 +3,12 @@ import json
 import pigpio
 import time
 import os
-
+# Heavily inspired by 433mhz cloning CLI tool from breisa
+# === Configuration ===
 DEFAULT_FILENAME = "saved_codes.json"
 DEFAULT_RECORD_MS = 500
 MAX_PULSES = 5400
-
+# ===================================
 def record(pi, filename, name, rx_gpio, record_time_ms):
     print(f"Recording '{name}' on GPIO {rx_gpio} for {record_time_ms} ms (max {MAX_PULSES} transitions)...")
 
