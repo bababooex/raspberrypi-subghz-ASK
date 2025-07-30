@@ -1,5 +1,5 @@
 # raspberrypi-subghz-ASK
-Experimentation with subghz modules, mainly on 433.92MHz. The project like previous TV-B-Gone implementation contains menu script, that you can use to choose between options, they are linked to python scripts with different purposes. And like the previous project, everything is public, you can do whatever you want, I don't really care. Maybe you could use this with more modules and even switch between frequencies, if you modify the script, but I only have this module and better solution would be just to buy CC1101 chip.
+Experimentation with subghz modules, mainly on 433.92MHz. The project, like previous TV-B-Gone implementation, contains menu script, that you can use to choose between options, they are linked to python scripts with different purposes. And like the previous project, everything is public, you can do whatever you want, I don't really care. Maybe you could use this with more modules and even switch between frequencies, if you modify the script, but I only have this module and better solution would be just to buy CC1101 chip.
 # Requirements
 The script requires pigpio library to work, you can install it by running:
 ```
