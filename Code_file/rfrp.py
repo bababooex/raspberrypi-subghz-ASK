@@ -83,7 +83,7 @@ def send(pi, filename, name, tx_gpio):
         pi.wave_send_once(wave_id)
         print(f"Sending '{name}' on GPIO {tx_gpio}...")
         while pi.wave_tx_busy():
-            time.sleep(0.001)
+            pass
         pi.wave_delete(wave_id)
     else:
         print("Failed to create waveform.")
