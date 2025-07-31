@@ -80,7 +80,7 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
-    finally:
+    finally: # There is sometimes problem with residual carrier, so better fix needed
         if pi:
             if PIN is not None:
                 pi.write(PIN, 0)
