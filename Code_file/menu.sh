@@ -1,9 +1,10 @@
 #!/bin/bash
-# Script uses whiptail to create "user friendly" interface, similar to TV-B-Gone menu.
+#Script uses whiptail to create "user friendly" interface
 
 # === File and GPIO configuration ===
 RFRP_SCRIPT="rfrp.py"
 RFRP_FILE="saved_codes.json"
+SUBRUTE_DIR="./sub_files"
 TX_GPIO=13
 RX_GPIO=25
 # ===================================
@@ -16,7 +17,8 @@ while true; do
     "1" "Record 433MHz code (rfrp)" \
     "2" "Send 433MHz code (rfrp)"\
     "3" "Delete 433MHz code (rfrp)" \
-    "4" "Exit" 3>&1 1>&2 2>&3)
+    "4" ".sub file bruteforce" \
+    "5" "Exit" 3>&1 1>&2 2>&3)
 
   case "$CHOICE" in
     "1")
@@ -67,6 +69,33 @@ while true; do
       fi
       ;;
     "4")
+      SUBRUTE_DIR="./sub_files"
+      if [ ! -d "$SUBRUTE_DIR" ]; then
+        whiptail --msgbox "Directory $SUBRUTE_DIR not found!" 10 50
+        continue
+      fi
+
+      SUB_MENU_ITEMS=""
+      for file in "$SUBRUTE_DIR"/*.sub; do
+        [ -e "$file" ] || continue
+        filename=$(basename "$file")
+        SUB_MENU_ITEMS+=" $filename $filename"
+      done
+
+      SELECTED_SUB=$(whiptail --title "Select .sub File" --menu "Choose a .sub file to test:" 20 60 10 $SUB_MENU_ITEMS 3>&1 1>&2 2>&3)
+      if [ -z "$SELECTED_SUB" ]; then
+        whiptail --msgbox "No file selected. Returning to menu." 10 50
+        continue
+      fi
+
+      REPEAT=$(whiptail --inputbox "Number of repeat per RAW_Data line?" 10 60 "3" 3>&1 1>&2 2>&3)
+      DELAY=$(whiptail --inputbox "Delay between RAW_Data lines in ms?" 10 60 "300" 3>&1 1>&2 2>&3)
+
+      whiptail --msgbox "Starting bruteforce with $SELECTED_SUB with user set $REPEAT times repeat and $DELAY ms delay" 10 60
+
+      python3 sub_bruteforce.py "$SUBRUTE_DIR/$SELECTED_SUB" "$REPEAT" "$DELAY" "$TX_GPIO" || whiptail --msgbox "Error running Python script." 10 50
+      ;;
+    "5")
       whiptail --msgbox "Deactivating pigpiod!\nGood bye!" 10 50
       sudo pigpiod kill
       break
