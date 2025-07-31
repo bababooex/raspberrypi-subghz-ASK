@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import pigpio
-
+# Simple .sub file python script for bruteforcing ASK receivers
 
 class FlipperSubParser:
     def __init__(self, path):
