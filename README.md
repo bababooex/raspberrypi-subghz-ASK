@@ -34,6 +34,6 @@ Because a lot of .sub files in subghz database contain RAW files, you can send t
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
 - https://github.com/breisa/433mhz - inspiration for signal cloning
+- https://github.com/merlinepedra25/flipperzero-bruteforce - flipper zero bruteforce files
 # TO DO
-- Flipper Zero .sub files support
 - More functions, possibilities...
