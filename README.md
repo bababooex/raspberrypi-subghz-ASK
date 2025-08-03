@@ -38,4 +38,4 @@ Because a lot of .sub files in subghz database contain RAW files, you can send t
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
 - https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
-- More functions, possibilities...
+- ASK protocol support like Princeton or Chamberlain
