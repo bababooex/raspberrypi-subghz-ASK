@@ -120,7 +120,7 @@ while true; do
       fi
       CHAIN_LENGHT=$(whiptail --inputbox "Lengh of a chain (prevent crashing)?" 10 60 "1000" 3>&1 1>&2 2>&3)
       whiptail --msgbox "Sending custom file with name $SELECTED_SUB using wave_chaining" 10 60
-      python3 "$SUBSEND_SCRIPT" "$SUBCUSTOM_DIR/$SELECTED_SUB" "$CHAIN_LENGHT" "$TX_GPIO" || whiptail --msgbox "Error running Python script. Possibly no more CBS left" 10 50
+      python3 "$SUBSEND_SCRIPT" "$SUBCUSTOM_DIR/$SELECTED_SUB" "$CHAIN_LENGHT" "$TX_GPIO" || whiptail --msgbox "Error running Python script. Try lowering lenght of chain." 10 50
       whiptail --msgbox "Going back to menu!" 10 50
       ;;
     "6")
