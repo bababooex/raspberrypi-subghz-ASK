@@ -29,10 +29,12 @@ Like for transmitting, there are also cheap modules for reception of ASK modulat
 
 Image of simple receiver
 # Subghz file support
-Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet.
+Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet. I included some files from flipper database to test.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/merlinepedra25/flipperzero-bruteforce - Flipper zero bruteforce files
+- https://github.com/SHUR1K-N/Flipper-Zero-Sub-GHz-Jamming-Files - Flipper zero jammer files
+- https://github.com/Robbbbbbbbb/tesla-chargeport/tree/main/Flipper%20Zero - Tesla chargeport Flipper zero files
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
 - https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
