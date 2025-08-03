@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import pigpio
-
+# Simple conversion from .sub to ASK signal, uses wave chaining for longer continuous signal
 # ==== CONFIG ====
 MAX_PULSES_PER_WAVE = 5400
 # =================
@@ -108,3 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
