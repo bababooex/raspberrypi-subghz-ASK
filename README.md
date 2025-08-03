@@ -29,7 +29,7 @@ Like for transmitting, there are also cheap modules for reception of ASK modulat
 
 Image of simple receiver
 # Subghz file support
-Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet only withe weather stations and that works well. I included some files from flipper database to test.
+Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet, only with weather stations and that works well. I included some files from flipper database to test.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/merlinepedra25/flipperzero-bruteforce - Flipper zero bruteforce files
