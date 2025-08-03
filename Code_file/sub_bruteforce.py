@@ -2,7 +2,7 @@ import sys
 import os
 import time
 import pigpio
-
+# Good for for transmitting long codes line by line
 
 class FlipperSubParser:
     def __init__(self, path):
@@ -85,5 +85,6 @@ if __name__ == "__main__":
             if PIN is not None:
                 pi.write(PIN, 0)
             pi.stop()
+
 
 
