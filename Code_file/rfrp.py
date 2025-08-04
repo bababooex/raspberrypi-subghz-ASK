@@ -3,13 +3,13 @@ import json
 import pigpio
 import time
 import os
-
+# ========== CONFIG =========
 DEFAULT_FILENAME = "saved_codes.json"
 DEFAULT_RECORD_MS = 500
 MAX_PULSES = 5400
-
+# ===========================
 def record(pi, filename, name, rx_gpio, record_time_ms):
-    print(f"[+] Recording '{name}' on GPIO {rx_gpio} for {record_time_ms} ms (max {MAX_PULSES} transitions)...")
+    print(f"Recording '{name}' on GPIO {rx_gpio} for {record_time_ms} ms (max {MAX_PULSES} transitions)...")
 
     last_tick = None
     recording = []
@@ -31,11 +31,11 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
     cb.cancel()
 
     if not recording:
-        print("[-] No signal recorded.")
+        print("No signal recorded, check you receiver or connection!")
         return
 
     if error:
-        print(f"[!] Max pulse limit ({MAX_PULSES}) exceeded. Recording truncated.")
+        print(f"Max pulse limit ({MAX_PULSES}) exceeded. Recording was cut off.")
 
     data = {}
     if os.path.exists(filename) and os.path.getsize(filename) > 0:
@@ -43,7 +43,7 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
         with open(filename, "r") as f:
             data = json.load(f)
      except json.JSONDecodeError:
-         print(f"[!] Warning: '{filename}' is invalid or empty. Starting fresh.")
+         print(f"Warning: '{filename}' is invalid or empty. JSON error.")
 
 
     data[name] = recording[:MAX_PULSES]
@@ -55,14 +55,14 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
 
 def send(pi, filename, name, tx_gpio):
     if not os.path.exists(filename):
-        print(f"[-] File '{filename}' not found.")
+        print(f"File '{filename}' not found, check your directory!")
         return
 
     with open(filename, "r") as f:
         data = json.load(f)
 
     if name not in data:
-        print(f"[-] No code named '{name}' found.")
+        print(f"No code named '{name}' found.")
         return
 
     signal = data[name]
@@ -99,9 +99,6 @@ def main():
     args = parser.parse_args()
 
     pi = pigpio.pi()
-    if not pi.connected:
-        print("[-] Could not connect to pigpio daemon.")
-        return
 
     try:
         if args.record:
@@ -109,9 +106,10 @@ def main():
         elif args.send:
             send(pi, args.file, args.name, args.tx)
         else:
-            print("[-] Use --record or --send.")
+            print("Use --record or --send.")
     finally:
         pi.stop()
 
 if __name__ == "__main__":
     main()
+
