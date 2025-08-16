@@ -35,7 +35,7 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
         return
 
     if error:
-        print(f"Max pulse limit ({MAX_PULSES}) exceeded. Recording was cut off.")
+        print(f"Max pulse limit ({MAX_PULSES}) exceeded! Recording was cut off.")
 
     data = {}
     if os.path.exists(filename) and os.path.getsize(filename) > 0:
@@ -43,7 +43,7 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
         with open(filename, "r") as f:
             data = json.load(f)
      except json.JSONDecodeError:
-         print(f"Warning: '{filename}' is invalid or empty. JSON error.")
+         print(f"Warning: '{filename}' is invalid or empty. JSON error!")
 
 
     data[name] = recording[:MAX_PULSES]
@@ -62,7 +62,7 @@ def send(pi, filename, name, tx_gpio):
         data = json.load(f)
 
     if name not in data:
-        print(f"No code named '{name}' found.")
+        print(f"No code named '{name}' found!")
         return
 
     signal = data[name]
@@ -80,12 +80,12 @@ def send(pi, filename, name, tx_gpio):
     wave_id = pi.wave_create()
     if wave_id >= 0:
         pi.wave_send_once(wave_id)
-        print(f"[+] Sending '{name}' on GPIO {tx_gpio}...")
+        print(f"Sending '{name}' on GPIO {tx_gpio}...")
         while pi.wave_tx_busy():
             pass
         pi.wave_delete(wave_id)
     else:
-        print("[-] Failed to create waveform.")
+        print("Failed to create waveform.")
 
 def main():
     parser = argparse.ArgumentParser(description="433 MHz ASK recorder/player")
@@ -112,4 +112,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
