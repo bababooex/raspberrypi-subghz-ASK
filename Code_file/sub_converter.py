@@ -81,7 +81,7 @@ def send_wave_chained(pi, pin, pulses, max_chunk_len, max_chain_length):
 
 def main():
     if len(sys.argv) !=4:
-        print("Usage: python3 sub_converter.py /path/to/file.sub [chain_length] [gpio_pin]")
+        print("Usage: python3 sub_converter.py /path/to/file.sub <chain_length> <gpio_pin>")
         sys.exit(1)
 
     sub_path, chain_length, gpio_pin = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -108,4 +108,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
