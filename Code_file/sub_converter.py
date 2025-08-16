@@ -13,7 +13,7 @@ PROTOCOLS = {
     # GateTX
     "GateTX": {
         "short": 350,
-        "long": 700,
+        "long": 700, # Long is used as reference, short is the constant value for multiplication
         "bit_len": 24,
         "header": [(-49, 2)],
         "bit_map": {
@@ -343,3 +343,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
