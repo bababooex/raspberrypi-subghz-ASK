@@ -29,7 +29,7 @@ Like for transmitting, there are also cheap modules for reception of ASK modulat
 
 Image of simple receiver
 # Subghz file support
-Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet, only with weather stations and that works well. I included some files from flipper database to test. Here is test file for Holtek_HT12X:
+Because a lot of .sub files in subghz database contain RAW data, you can send them using external ASK module, I also added most used protocols support. Many are hard to implement and they arent worth to spend time on. Here is test file for Holtek_HT12X:
 ```
 Filetype: Flipper SubGhz Key File 
 Version: 1 
