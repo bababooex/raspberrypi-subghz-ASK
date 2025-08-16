@@ -32,6 +32,7 @@ Image of simple receiver
 Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet, only with weather stations and that works well. I included some files from flipper database to test. I will try to make it even more compatible.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
+- https://github.com/jamisonderek/flipper-zero-tutorials/wiki/Sub-GHz - Flipper zero subghz explanation and protocol definitions
 - https://github.com/merlinepedra25/flipperzero-bruteforce - Flipper zero bruteforce files
 - https://github.com/SHUR1K-N/Flipper-Zero-Sub-GHz-Jamming-Files - Flipper zero jammer files
 - https://github.com/Robbbbbbbbb/tesla-chargeport/tree/main/Flipper%20Zero - Tesla chargeport Flipper zero files
