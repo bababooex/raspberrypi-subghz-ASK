@@ -184,7 +184,7 @@ def encode_protocol(proto_def, key_hex, te_override=None):
         for seg in proto_def["bit_map"].get(b, []):
             pulses.extend(apply_multiplier(seg))
 
-    # Stop (optional)
+    # Stop - using it in all protocols, because of trailing of last bit, if defined, its not a problem
     if "stop" in proto_def:
         for s in proto_def["stop"]:
             pulses.extend(apply_multiplier(s))
@@ -343,4 +343,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
