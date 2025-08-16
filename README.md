@@ -19,7 +19,7 @@ It will enable pigpiod and throw you to menu, where you can choose some options,
 # Transmitter
 You can use simple ASK TX module, like fs1000a or something similar, I used some random ASK transmitter with two SMD RF transisotrs labeled "2D". I wanted the frequency to be very precise, so I used SAW resonator with label 433.92 meaning 433.92MHz and replaced the previous one. I connected this module data input to GPIO_13 and 5V supply.
 
-![TX](images/TX.png)'
+![TX](images/TX.png)
 
 Image of simple transmitter
 # Receiver circuit
@@ -29,7 +29,21 @@ Like for transmitting, there are also cheap modules for reception of ASK modulat
 
 Image of simple receiver
 # Subghz file support
-Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet, only with weather stations and that works well. I included some files from flipper database to test. I will try to make it even more compatible.
+Because a lot of .sub files in subghz database contain RAW files, you can send them using external ASK module. This will probably work for bruteforcing and code search, but I haven't tested it yet, only with weather stations and that works well. I included some files from flipper database to test. Here is test file for Holtek_HT12X:
+```
+Filetype: Flipper SubGhz Key File 
+Version: 1 
+Frequency: 305000000 
+Preset: FuriHalSubGhzPresetOok650Async 
+Protocol: Holtek_HT12X 
+Bit: 12 
+Key: 00 00 00 00 00 00 07 CF 
+TE: 348
+```
+Encoded version looks like this: 
+![Holtek](images/Holtek.png)
+
+So I would say pretty accurate.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/jamisonderek/flipper-zero-tutorials/wiki/Sub-GHz - Flipper zero subghz explanation and protocol definitions
@@ -39,4 +53,4 @@ Because a lot of .sub files in subghz database contain RAW files, you can send t
 - https://abyz.me.uk/rpi/pigpio/index.html - pigpio library website
 - https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
-- ASK protocol support like Princeton or Chamberlain
+- Maybe add more protocols
