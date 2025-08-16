@@ -43,7 +43,7 @@ TE: 348
 Encoded version looks like this: 
 ![Holtek](images/Holtek.png)
 
-So I would say pretty accurate.
+You can see TE override, because short lenght is 348 uS. Total bit lenght is 13 bits, thus key + header in this instance. 
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/jamisonderek/flipper-zero-tutorials/wiki/Sub-GHz - Flipper zero subghz explanation and protocol definitions
