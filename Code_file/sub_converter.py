@@ -1,7 +1,7 @@
 import sys
 import os
 import pigpio
-
+# More advanced version of sub converter, now supports various range of protocols, some are maybe not ASK or on 433.92MHz, but I added them just to be sure anyway.
 # ==== CONFIG ====
 MAX_PULSES_PER_WAVE = 5400
 # ================
@@ -231,7 +231,7 @@ def encode_protocol(proto_def, key_hex, te_override=None):
         for seg in proto_def["bit_map"].get(b, []):
             pulses.extend(apply_multiplier(seg))
 
-    # Stop (optional)
+    # Stop - eventhough some protocol dont have stop bit, it is mandatory to make last bit low to prevent trailing of the last bit from key.
     if "stop" in proto_def:
         for s in proto_def["stop"]:
             pulses.extend(apply_multiplier(s))
@@ -415,3 +415,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
