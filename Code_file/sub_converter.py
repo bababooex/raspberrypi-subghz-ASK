@@ -1,7 +1,7 @@
 import sys
 import os
 import pigpio
-# Now supporting most common protocols and also BinRAW
+
 # ==== CONFIG ====
 MAX_PULSES_PER_WAVE = 5400
 # ================
@@ -13,7 +13,7 @@ PROTOCOLS = {
     # GateTX
     "GateTX": {
         "short": 350,
-        "long": 700, # Long is used as reference, short is the constant value for multiplication
+        "long": 700,
         "bit_len": 24,
         "header": [(-49, 2)],
         "bit_map": {
@@ -32,6 +32,18 @@ PROTOCOLS = {
             "1": [(3, -1)],
         },
     "stop": [(1, -30)],
+    },
+    # Honeywell WDB
+    "Honeywell": {
+        "short": 160,
+        "long": 320,
+        "bit_len": 48,
+        "header": [(-3, )],
+        "bit_map": {
+            "0": [(1, -2)],
+            "1": [(2, -1)],
+        },
+    "stop": [(3,)],
     },
     # Holtek
     "Holtek": {
@@ -56,6 +68,18 @@ PROTOCOLS = {
         },
     "stop": [(-1,)],
     },
+    # Nice FLO
+    "Nice FLO": {
+        "short": 700,
+        "long": 1400,
+        "bit_len": 12,
+        "header": [(-36, 1)],
+        "bit_map": {
+            "0": [(-1, 2)],
+            "1": [(-2, 1)],
+        },
+    "stop": [(-1,)],
+    },
     # Ansonic
     "Ansonic": {
         "short": 555,
@@ -68,12 +92,35 @@ PROTOCOLS = {
         },
     "stop": [(-1,)],
     },
-    # Nice FLO
-    "Nice FLO": {
-        "short": 700,
-        "long": 1400,
-        "bit_len": 12,
-        "header": [(-36, 1)],
+    # Hormann
+    "Hormann HSM": {
+        "short": 500,
+        "long": 1000,
+        "bit_len": 44,
+        "header": [(24, -1)],
+        "bit_map": {
+            "0": [(1, -2)],
+            "1": [(2, -1)],
+        },
+    "stop": [(-24,)],
+    },
+    # SMC5326
+    "SMC5326": {
+        "short": 300,
+        "long": 900,
+        "bit_len": 25,
+        "bit_map": {
+            "0": [(1, -3)],
+            "1": [(3, -1)],
+        },
+    "stop": [(1,25)],
+    },
+    # Phoenix_V2
+    "Phoenix_V2": {
+        "short": 427,
+        "long": 853,
+        "bit_len": 52,
+        "header": [(-60, 6)],
         "bit_map": {
             "0": [(-1, 2)],
             "1": [(-2, 1)],
@@ -184,7 +231,7 @@ def encode_protocol(proto_def, key_hex, te_override=None):
         for seg in proto_def["bit_map"].get(b, []):
             pulses.extend(apply_multiplier(seg))
 
-    # Stop - using it in all protocols, because of trailing of last bit, if defined, its not a problem
+    # Stop (optional)
     if "stop" in proto_def:
         for s in proto_def["stop"]:
             pulses.extend(apply_multiplier(s))
@@ -292,6 +339,11 @@ def main():
             key = meta["Key"]
             pulses = encode_protocol(PROTOCOLS["Princeton"], key, te)
 
+        elif proto == "Ansonic":
+            te = int(meta.get("TE", 0)) or None
+            key = meta["Key"]
+            pulses = encode_protocol(PROTOCOLS["Ansonic"], key, te)
+
         elif proto == "GateTX":
             te = int(meta.get("TE", 0)) or None
             key = meta["Key"]
@@ -306,7 +358,27 @@ def main():
             te = int(meta.get("TE", 0)) or None
             key = meta["Key"]
             pulses = encode_protocol(PROTOCOLS["Holtek_HT12X"], key, te)
-
+        
+        elif proto == "SMC5326":
+            te = int(meta.get("TE", 0)) or None
+            key = meta["Key"]
+            pulses = encode_protocol(PROTOCOLS["SMC5326"], key, te)    
+                  
+        elif proto == "Hormann HSM":
+            te = int(meta.get("TE", 0)) or None
+            key = meta["Key"]
+            pulses = encode_protocol(PROTOCOLS["Hormann HSM"], key, te)    
+        
+        elif proto == "Phoenix_V2":
+            te = int(meta.get("TE", 0)) or None
+            key = meta["Key"]
+            pulses = encode_protocol(PROTOCOLS["Phoenix_V2"], key, te)
+        
+        elif proto == "Honeywell":
+            te = int(meta.get("TE", 0)) or None
+            key = meta["Key"]
+            pulses = encode_protocol(PROTOCOLS["Honeywell"], key, te)  
+                        
         elif proto == "Ansonic":
             te = int(meta.get("TE", 0)) or None
             key = meta["Key"]
@@ -343,5 +415,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
