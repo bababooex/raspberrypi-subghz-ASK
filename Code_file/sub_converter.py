@@ -20,7 +20,7 @@ PROTOCOLS = {
             "0": [(-1, 2)],
             "1": [(-2, 1)],
         },
-    "stop": [(1, -30)],  
+    "stop": [(-1,)],  
     },
     # Princeton
     "Princeton": {
@@ -415,4 +415,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
