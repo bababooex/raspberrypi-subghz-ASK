@@ -41,6 +41,7 @@ Key: 00 00 00 00 00 00 07 CF
 TE: 348
 ```
 Encoded version looks like this: 
+
 ![Holtek](images/Holtek.png)
 
 You can see TE override, because short lenght is 348 uS. Total bit lenght is 13 bits, thus key + header in this instance. 
