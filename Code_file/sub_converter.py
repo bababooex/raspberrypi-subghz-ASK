@@ -250,72 +250,65 @@ def encode_binraw(bit_len, te, data_raw): # BinRAW encoding, just to be complete
             pulses.append(-te)
     return pulses
 
-
 # =======================
 # Wave sending
 # =======================
-def send_wave_chained(pi, pin, pulses, max_chunk_len, max_chain_length):
+def send_wave_chained(pi, pin, pulses, max_chunk_len, max_chain_length, repeat):
     pi.set_mode(pin, pigpio.OUTPUT)
     pi.write(pin, 0)
     pi.wave_clear()
 
     idx = 0
+    wave_ids = []
     total_len = len(pulses)
 
     while idx < total_len:
-        wave_ids = []
+        chunk = pulses[idx:idx + max_chunk_len]
+        waveform = []
+        for pulse in chunk:
+            duration = abs(pulse)
+            if pulse > 0:
+                waveform.append(pigpio.pulse(1 << pin, 0, duration))
+            else:
+                waveform.append(pigpio.pulse(0, 1 << pin, duration))
 
-        for _ in range(max_chain_length):
-            if idx >= total_len:
-                break
+        pi.wave_add_generic(waveform)
+        wave_id = pi.wave_create()
+        if wave_id < 0:
+            raise RuntimeError("No more control blocks available")
+        wave_ids.append(wave_id)
+        idx += len(chunk)
 
-            chunk = pulses[idx:idx + max_chunk_len]
-            waveform = []
+        chain = []
+        for wid in wave_ids:
+            chain += [255, 0, wid]
 
-            for pulse in chunk:
-                duration = abs(pulse)
-                if pulse > 0:
-                    waveform.append(pigpio.pulse(1 << pin, 0, duration))  # HIGH
-                else:
-                    waveform.append(pigpio.pulse(0, 1 << pin, duration))  # LOW
+        if repeat > 1:
+            chain = [255, 0] + chain + [255, 1, repeat & 255, (repeat >> 8) & 255]
 
-            pi.wave_add_generic(waveform)
-            wave_id = pi.wave_create()
+        pi.wave_chain(chain)
+        while pi.wave_tx_busy():
+          pass
 
-            if wave_id < 0:
-                pi.wave_clear()
-                raise RuntimeError("No more control blocks available")
+        for wid in wave_ids:
+          pi.wave_delete(wid)
 
-            wave_ids.append(wave_id)
-            idx += len(chunk)
-
-        if wave_ids:
-            chain = []
-            for wid in wave_ids:
-                chain += [255, 0, wid]
-
-            pi.wave_chain(chain)
-            while pi.wave_tx_busy():
-                pass
-
-            for wid in wave_ids:
-                pi.wave_delete(wid)
-
-    pi.write(pin, 0)
-    pi.wave_clear()
+        pi.wave_clear()
+        pi.write(pin, 0)
 
 
 # =======================
 # Main
 # =======================
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: python3 sub_converter.py /path/to/file.sub <chain_length> <gpio_pin>")
+    if len(sys.argv) != 5:
+        print("Usage: python3 sub_converter.py /path/to/file.sub <chain_length> <gpio_pin> <repeat_count>")
         sys.exit(1)
 
-    sub_path, chain_length, gpio_pin = sys.argv[1], sys.argv[2], sys.argv[3]
+    sub_path, chain_length, gpio_pin, repeat = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     MAX_CHAIN_LENGTH = int(chain_length)
     PIN = int(gpio_pin)
+    REPEAT =int(repeat)
 
     parser = FlipperSubParser(sub_path)
     meta = parser.meta
@@ -407,13 +400,13 @@ def main():
             print(f"Sub file contains unsupported protocol!")
 
     pi = pigpio.pi()
-
-    print(f"Transmitting {len(pulses)} pulses via {proto} protocol")
-    send_wave_chained(pi, PIN, pulses, MAX_PULSES_PER_WAVE, MAX_CHAIN_LENGTH)
+    print(f"Transmitting {len(pulses)} pulses via {proto} protocol with {repeat}X repeat")
+    send_wave_chained(pi, PIN, pulses, MAX_PULSES_PER_WAVE, MAX_CHAIN_LENGTH, REPEAT)
     pi.stop()
-
 
 if __name__ == "__main__":
     main()
+
+
 
 
