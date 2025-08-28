@@ -259,43 +259,46 @@ def send_wave_chained(pi, pin, pulses, max_chunk_len, max_chain_length, repeat):
     pi.wave_clear()
 
     idx = 0
-    wave_ids = []
     total_len = len(pulses)
 
     while idx < total_len:
-        chunk = pulses[idx:idx + max_chunk_len]
-        waveform = []
-        for pulse in chunk:
-            duration = abs(pulse)
-            if pulse > 0:
-                waveform.append(pigpio.pulse(1 << pin, 0, duration))
-            else:
-                waveform.append(pigpio.pulse(0, 1 << pin, duration))
+        wave_ids=[]
+        for _ in range (max_chain_length):
+            if idx >= total_len:
+                break
+            chunk = pulses[idx:idx + max_chunk_len]
+            waveform = []
+            for pulse in chunk:
+                duration = abs(pulse)
+                if pulse > 0:
+                   waveform.append(pigpio.pulse(1 << pin, 0, duration))
+                else:
+                   waveform.append(pigpio.pulse(0, 1 << pin, duration))
 
-        pi.wave_add_generic(waveform)
-        wave_id = pi.wave_create()
-        if wave_id < 0:
-            raise RuntimeError("No more control blocks available")
-        wave_ids.append(wave_id)
-        idx += len(chunk)
+            pi.wave_add_generic(waveform)
+            wave_id = pi.wave_create()
+            if wave_id < 0:
+               pi.wave_clear()
+               raise RuntimeError("No more control blocks available")
+            wave_ids.append(wave_id)
+            idx += len(chunk)
+        if wave_ids:
+            chain = []
+            for wid in wave_ids:
+                chain += [255, 0, wid]
 
-        chain = []
-        for wid in wave_ids:
-            chain += [255, 0, wid]
+            if repeat > 1:
+                chain = [255, 0] + chain + [255, 1, repeat & 255, (repeat >> 8) & 255]
 
-        if repeat > 1:
-            chain = [255, 0] + chain + [255, 1, repeat & 255, (repeat >> 8) & 255]
+            pi.wave_chain(chain)
+            while pi.wave_tx_busy():
+              pass
 
-        pi.wave_chain(chain)
-        while pi.wave_tx_busy():
-          pass
+            for wid in wave_ids:
+                pi.wave_delete(wid)
 
-        for wid in wave_ids:
-          pi.wave_delete(wid)
-
-        pi.wave_clear()
-        pi.write(pin, 0)
-
+    pi.write(pin, 0)
+    pi.wave_clear()
 
 # =======================
 # Main
@@ -406,6 +409,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
