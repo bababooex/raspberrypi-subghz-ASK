@@ -51,7 +51,7 @@ def record(pi, filename, name, rx_gpio, record_time_ms):
     with open(filename, "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"[+] Saved {len(recording[:MAX_PULSES])} transitions to '{name}'.")
+    print(f"Saved {len(recording[:MAX_PULSES])} transitions to '{name}'.")
 
 def send(pi, filename, name, tx_gpio):
     if not os.path.exists(filename):
@@ -112,5 +112,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
