@@ -105,6 +105,7 @@ def main():
             record(pi, args.file, args.name, args.rx, args.time)
         elif args.send:
             send(pi, args.file, args.name, args.tx)
+            pi.write(args.tx, 0) # SIgnal doesnt stop fix
         else:
             print("Use --record or --send.")
     finally:
@@ -112,6 +113,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
