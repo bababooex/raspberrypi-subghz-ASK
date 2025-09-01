@@ -15,7 +15,7 @@ To use the script, make it executable with chmod and then simply run it with bas
 sudo chmod +x menu.sh
 ./menu.sh
 ```
-It will enable pigpiod and throw you to menu, where you can choose some options, I only added signal replay option, more later...
+It will enable pigpiod and throw you to menu, where you can choose some options, like jamming, record/replay etc.
 # Transmitter
 You can use simple ASK TX module, like fs1000a or something similar, I used some random ASK transmitter with two SMD RF transisotrs labeled "2D". I wanted the frequency to be very precise, so I used SAW resonator with label 433.92 meaning 433.92MHz and replaced the previous one. I connected this module data input to GPIO_13 and 5V supply.
 
