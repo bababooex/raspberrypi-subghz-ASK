@@ -1,118 +1,159 @@
 import argparse
-import json
-import pigpio
 import time
+import json
 import os
+import pigpio
+import matplotlib
+import matplotlib.pyplot as plt
+
+# Original file by @breisa - https://github.com/breisa/433mhz
+# This is modified version, that uses single .json file and also allows exporting plots
+# I replaced my original rfrp.py with this code, because it has better functions and features
+
 # ========== CONFIG =========
 DEFAULT_FILENAME = "saved_codes.json"
+DEFAULT_GRAPHFILE = "./graphs/"
 DEFAULT_RECORD_MS = 500
-MAX_PULSES = 5400
 # ===========================
-def record(pi, filename, name, rx_gpio, record_time_ms):
-    print(f"Recording '{name}' on GPIO {rx_gpio} for {record_time_ms} ms (max {MAX_PULSES} transitions)...")
 
-    last_tick = None
-    recording = []
-    error = False
-
-    def cb_func(gpio, level, tick):
-        nonlocal last_tick, error
-        if last_tick is not None:
-            duration = pigpio.tickDiff(last_tick, tick)
-            if len(recording) < MAX_PULSES:
-                recording.append([level, duration])
-            else:
-                error = True
-        last_tick = tick
-
-    pi.set_mode(rx_gpio, pigpio.INPUT)
-    cb = pi.callback(rx_gpio, pigpio.EITHER_EDGE, cb_func)
-    time.sleep(record_time_ms / 1000.0)
-    cb.cancel()
-
-    if not recording:
-        print("No signal recorded, check you receiver or connection!")
-        return
-
-    if error:
-        print(f"Max pulse limit ({MAX_PULSES}) exceeded! Recording was cut off.")
-
-    data = {}
-    if os.path.exists(filename) and os.path.getsize(filename) > 0:
-     try:
-        with open(filename, "r") as f:
-            data = json.load(f)
-     except json.JSONDecodeError:
-         print(f"Warning: '{filename}' is invalid or empty. JSON error!")
-
-
-    data[name] = recording[:MAX_PULSES]
-
-    with open(filename, "w") as f:
-        json.dump(data, f, indent=2)
-
-    print(f"Saved {len(recording[:MAX_PULSES])} transitions to '{name}'.")
-
-def send(pi, filename, name, tx_gpio):
-    if not os.path.exists(filename):
-        print(f"File '{filename}' not found, check your directory!")
-        return
-
-    with open(filename, "r") as f:
-        data = json.load(f)
-
-    if name not in data:
-        print(f"No code named '{name}' found!")
-        return
-
-    signal = data[name]
-    wf = []
-
-    for level, duration in signal:
-        if level == 1:
-            wf.append(pigpio.pulse(1 << tx_gpio, 0, duration))
-        else:
-            wf.append(pigpio.pulse(0, 1 << tx_gpio, duration))
-
-    pi.set_mode(tx_gpio, pigpio.OUTPUT)
-    pi.wave_add_new()
-    pi.wave_add_generic(wf)
-    wave_id = pi.wave_create()
-    if wave_id >= 0:
-        pi.wave_send_once(wave_id)
-        print(f"Sending '{name}' on GPIO {tx_gpio}...")
-        while pi.wave_tx_busy():
-            pass
-        pi.wave_delete(wave_id)
+def store(path, key, data):
+    if os.path.exists(path):
+        with open(path, 'r') as file:
+            all_data = json.load(file)
     else:
-        print("Failed to create waveform.")
+        all_data = {}
+    all_data[key] = data
+    with open(path, 'w') as file:
+        json.dump(all_data, file, indent=2)
+def load(path, key):
+    with open(path, 'r') as file:
+        all_data = json.load(file)
+    if key not in all_data:
+        raise KeyError(f"Code with name {key} not found in {path}.")
+    return all_data[key]
+
+def record(file, name, pin, rectime):
+    print("Recording started!")
+    record_edges = False
+    edges = []
+    pi=pigpio.pi()
+    def handle_edge(pin, level, useconds):
+        if (record_edges and useconds > start_time):
+            edges.append((level, useconds))
+    pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
+    pi.set_mode(pin, pigpio.INPUT)
+    pi.callback(pin, pigpio.EITHER_EDGE, handle_edge)
+    print("Recording started!")
+    start_time = pi.get_current_tick()
+    record_edges = True
+    time.sleep(rectime)
+    record_edges = False
+    stop_time = pi.get_current_tick()
+
+    pi.stop()
+
+    if (len(edges) >= 2):
+        if (edges[0][0] == 0):
+            edges = edges[1:]
+        if (edges[-1][0] == 1):
+            edges = edges[:-1]
+
+    if (len(edges) < 2):
+        print("No signal recorded, check you receiver or connection!")
+    else:
+        signal = []
+        last_time = start_time
+        for level, useconds in edges:
+            time_diff = useconds - last_time
+            signal.append((int(level == 0), time_diff))
+            last_time = useconds
+        signal.append((0, stop_time - last_time))
+
+        store(file, name, signal)
+        print(f"Saved {len(signal)} with {name} to {file}.")
+
+def send(file, name, pin):
+    data = load(file, name)
+    pi=pigpio.pi()
+    pi.set_mode(pin, pigpio.OUTPUT)
+    print(f"Sending {name} from {file}...", end='', flush=True)
+    waveform = []
+    for state, duration in data:
+        match state:
+            case 1:
+                waveform.append(pigpio.pulse(1<<pin, 0, duration))
+            case 0:
+                waveform.append(pigpio.pulse(0, 1<<pin, duration))
+    pi.wave_clear()
+    pi.wave_add_generic(waveform)
+    signal = pi.wave_create()
+
+    pi.wave_send_once(signal)
+    time.sleep(1.5 * pi.wave_get_micros()/1_000_000)
+    pi.wave_tx_stop()
+    pi.wave_clear()
+
+    print("Code sent!")
+    pi.stop()
+
+def plot(file, name, export=False):
+    signal = load(file, name)
+
+    dots = []
+    time = 0
+    for state, duration in signal:
+        dots.append((time, state))
+        time += duration
+        dots.append((time, state))
+
+    x, y = zip(*dots)
+    plt.figure(num=f"{file}:{name}")
+    plt.title(f"ASK code: {name}")
+    plt.xlabel("Microseconds [μS]")
+    plt.ylabel("Amplitude (logic 0/1)")
+    plt.plot(x, y)
+    if export:
+        outfile = f"{name}.svg"
+        plt.savefig(DEFAULT_GRAPHFILE + outfile)
+        print(f"Saved plot as {outfile}.")
+    else:
+        plt.show()
+
+def create_argument_parser():
+    parser = argparse.ArgumentParser()
+    modes = parser.add_mutually_exclusive_group(required=True)
+    modes.add_argument("--record", metavar="GPIO", type=int,
+        help="Record a signal")
+    modes.add_argument("--plot", action="store_true", default=False,
+        help="Plot a signal")
+    modes.add_argument("--send", metavar="GPIO", type=int,
+        help="Send a signal")
+    parser.add_argument("--rectime", metavar='MS', type=int, default=DEFAULT_RECORD_MS,
+        help="Recording time (ms)")
+    parser.add_argument("--name", required=True,
+        help="Name of a signal")
+    parser.add_argument("--file", required=True, default=DEFAULT_FILENAME, help="JSON file to store all signals")
+    parser.add_argument("--export", action='store_true', help="Export as .svg if using CLI, otherwise show normally")
+    return parser
 
 def main():
-    parser = argparse.ArgumentParser(description="433 MHz ASK recorder/player")
-    parser.add_argument("--record", action="store_true", help="Record a signal")
-    parser.add_argument("--send", action="store_true", help="Send a signal")
-    parser.add_argument("--name", required=True, help="Name of signal")
-    parser.add_argument("--file", default=DEFAULT_FILENAME, help="JSON file")
-    parser.add_argument("--time", type=int,  help="Recording time (ms)")
-    parser.add_argument("--tx", type=int, help="TX GPIO pin")
-    parser.add_argument("--rx", type=int, help="RX GPIO pin")
-    args = parser.parse_args()
-
+    arg_parser = create_argument_parser()
+    args = arg_parser.parse_args()
     pi = pigpio.pi()
-
-    try:
-        if args.record:
-            record(pi, args.file, args.name, args.rx, args.time)
-        elif args.send:
-            send(pi, args.file, args.name, args.tx)
-            pi.write(args.tx, 0) # SIgnal doesnt stop fix
+    if (args.record is not None):
+        if (args.rectime < 100 or args.rectime > 10_000):
+            print("Recording time should be between 100ms and 10s.")
         else:
-            print("Use --record or --send.")
-    finally:
-        pi.stop()
+            record(args.file, args.name, args.record, args.rectime/1000)
+    elif (args.plot):
+        plot(args.file, args.name, export=args.export)
+    elif (args.send is not None):
+        send(args.file, args.name, args.send)
+    else:
+        arg_parser.print_help()
 
 if __name__ == "__main__":
-    main()
+        main()
 
 
 
