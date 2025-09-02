@@ -1,6 +1,6 @@
 #!/bin/bash
 #Script uses whiptail to create "user friendly" interface
-
+#Now with plotting
 # === File and GPIO configuration ===
 RFRP_SCRIPT="rfrp.py"
 RFRP_FILE="saved_codes.json"
@@ -8,7 +8,7 @@ BRUTE_SCRIPT="sub_bruteforce.py"
 SUBRUTE_DIR="./sub_brute_files"
 JAM_SCRIPT="jammer.py"
 JAM_FILE="jammer.sub"
-SUBSEND_SCRIPT="sub_converter.py"
+SUBSEND_SCRIPT="supp_converter.py"
 SUBCUSTOM_DIR="./sub_custom_files"
 TX_GPIO=13
 RX_GPIO=25
@@ -21,11 +21,12 @@ while true; do
   CHOICE=$(whiptail --title "433MHz Control Menu" --menu "Select an option:" 20 60 10 \
     "1" "Record 433MHz code (rfrp)" \
     "2" "Send 433MHz code (rfrp)"\
-    "3" "Delete 433MHz code (rfrp)" \
-    "4" ".sub file bruteforce" \
-    "5" "Custom .sub file" \
-    "6" "Jam 433MHz band" \
-    "7" "Exit" 3>&1 1>&2 2>&3)
+    "3" "Plot 433MHz code (rfrp)" \
+    "4" "Delete 433MHz code (rfrp)" \
+    "5" ".sub file bruteforce" \
+    "6" "Custom .sub file" \
+    "7" "Jam 433MHz band" \
+    "8" "Exit" 3>&1 1>&2 2>&3)
 
   case "$CHOICE" in
     "1")
@@ -35,7 +36,7 @@ while true; do
         continue
       fi
       RECORD_TIME=$(whiptail --inputbox "Recording time in ms (default 500):" 10 50 "500" 3>&1 1>&2 2>&3)
-      python3 "$RFRP_SCRIPT" --record --name "$CODE_NAME" --time "$RECORD_TIME" --file "$RFRP_FILE" --rx "$RX_GPIO" || whiptail --msgbox "Error running Python script." 10 50
+      python3 "$RFRP_SCRIPT" --record "$RX_GPIO" --name "$CODE_NAME" --rectime "$RECORD_TIME" --file "$RFRP_FILE" || whiptail --msgbox "Error running Python script." 10 50
       ;;
     "2")
       if [ ! -s "$RFRP_FILE" ] || [ "$(jq -r 'keys | length' "$RFRP_FILE")" -eq 0 ]; then
@@ -49,12 +50,37 @@ while true; do
 
       CODE_TO_PLAY=$(whiptail --title "Send 433MHz Code" --menu "Choose a code to send:" 20 60 10 $MENU_ITEMS 3>&1 1>&2 2>&3)
       if [ -n "$CODE_TO_PLAY" ]; then
-        python3 "$RFRP_SCRIPT" --send --name "$CODE_TO_PLAY" --file "$RFRP_FILE" --tx "$TX_GPIO" || whiptail --msgbox "Error running Python script." 10 50
+        python3 "$RFRP_SCRIPT" --send "$TX_GPIO" --name "$CODE_TO_PLAY" --file "$RFRP_FILE" || whiptail --msgbox "Error running Python script." 10 50
       else
         whiptail --msgbox "Going back to menu!" 10 50
       fi
       ;;
     "3")
+      if [ ! -s "$RFRP_FILE" ] || [ "$(jq -r 'keys | length' "$RFRP_FILE")" -eq 0 ]; then
+        whiptail --msgbox "No 433 MHz codes found in $RFRP_FILE" 10 50
+        continue
+      fi
+
+      MENU_ITEMS=""
+      while IFS= read -r name; do
+        MENU_ITEMS+=" $name $name"
+      done < <(jq -r 'keys[]' "$RFRP_FILE")
+
+      CODE_TO_PLOT=$(whiptail --title "Plot 433MHz Code" --menu "Choose a code to plot:" 20 60 10 $MENU_ITEMS 3>&1 1>&2 2>&3)
+
+      if [ -n "$CODE_TO_PLOT" ]; then
+        if whiptail --yesno "Do you want to export the plot as SVG instead of viewing it?" 10 50; then
+          python3 "$RFRP_SCRIPT" --plot --name "$CODE_TO_PLOT" --file "$RFRP_FILE" --export
+          whiptail --msgbox "Exported plot as ${CODE_TO_PLOT}.svg, returning to menu!" 10 50
+        else
+          python3 "$RFRP_SCRIPT" --plot --name "$CODE_TO_PLOT" --file "$RFRP_FILE"
+          whiptail --msgbox "Closed plot window, returning to menu!" 10 50
+      fi
+      else
+         whiptail --msgbox "Going back to menu!" 10 50
+      fi
+      ;;
+    "4")
       if [ ! -s "$RFRP_FILE" ] || [ "$(jq -r 'keys | length' "$RFRP_FILE")" -eq 0 ]; then
         whiptail --msgbox "No 433 MHz codes found in $RFRP_FILE" 10 50
         continue
@@ -75,7 +101,7 @@ while true; do
         whiptail --msgbox "Going back to menu!" 10 50
       fi
       ;;
-    "4")
+    "5")
       if [ ! -d "$SUBRUTE_DIR" ]; then
         whiptail --msgbox "Directory $SUBRUTE_DIR not found!" 10 50
         continue
@@ -100,7 +126,7 @@ while true; do
       python3 "$BRUTE_SCRIPT" "$SUBRUTE_DIR/$SELECTED_SUB" "$REPEAT" "$DELAY" "$TX_GPIO" || whiptail --msgbox "Error running Python script, only RAW .sub files are supported!" 10 50
       whiptail --msgbox "Going back to menu!" 10 50
       ;;
-    "5")
+    "6")
       if [ ! -d "$SUBCUSTOM_DIR" ]; then
         whiptail --msgbox "Directory $SUBCUSTOM_DIR not found!" 10 50
         continue
@@ -119,17 +145,17 @@ while true; do
         continue
       fi
       CHAIN_LENGHT=$(whiptail --inputbox "Lengh of a chain (prevent crashing)?" 10 60 "10000000000" 3>&1 1>&2 2>&3)
-      REPEAT=$(whiptail --inputbox "Repeat times?" 10 60 "5" 3>&1 1>&2 2>&3)
+      REPEAT=$(whiptail --inputbox "Repeat times?" 10 60 "3" 3>&1 1>&2 2>&3)
       whiptail --msgbox "Sending custom file with name $SELECTED_SUB using wave_chaining with repeat $REPEAT X times" 10 60
-      python3 "$SUBSEND_SCRIPT" "$SUBCUSTOM_DIR/$SELECTED_SUB" "$CHAIN_LENGHT" "$TX_GPIO" "$REPEAT" || whiptail --msgbox "Error running Python script. 
+      python3 "$SUBSEND_SCRIPT" "$SUBCUSTOM_DIR/$SELECTED_SUB" "$CHAIN_LENGHT" "$TX_GPIO" "$REPEAT" || whiptail --msgbox "Error running Python script. Possibly no more CBS or unsupported protocol!" 10 50
       whiptail --msgbox "Going back to menu!" 10 50
       ;;
-    "6")
+    "7")
       whiptail --msgbox "Jamming started... Press Ctrl+C to return." 10 50
       python3 "$JAM_SCRIPT" "$JAM_FILE" "$TX_GPIO"
       whiptail --msgbox "Going back to menu!" 10 50
       ;;
-    "7")
+    "8")
       whiptail --msgbox "Deactivating pigpiod!\nGood bye!" 10 50
       sudo pigpiod kill
       break
@@ -141,3 +167,4 @@ while true; do
       ;;
   esac
 done
+
