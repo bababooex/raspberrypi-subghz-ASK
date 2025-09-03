@@ -9,6 +9,10 @@ cd pigpio-master
 make
 sudo make install
 ```
+For plotting, you will need to install matplotlib. On Debian, you can do it via apt:
+```
+sudo apt-get install python3-matplotlib
+```
 # Usage
 To use the script, make it executable with chmod and then simply run it with bash.
 ```
