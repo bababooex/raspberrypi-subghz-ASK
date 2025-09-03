@@ -55,4 +55,3 @@ You can see TE override, because short lenght is 348 uS. Total bit lenght is 13 
 - https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
 - Maybe add more protocols
-- Plotting function
