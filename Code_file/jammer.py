@@ -4,6 +4,7 @@ import time
 import signal
 import pigpio
 # Sends jamming signal unitl you exit with CTRL+C, only works at close range
+# Not really using wave_chaining, but isnt really needed, when you want to jam
 running = True
 def handle_exit(sig, frame):
     global running
