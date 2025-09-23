@@ -49,6 +49,22 @@ Encoded version looks like this:
 ![Holtek](images/Holtek.png)
 
 You can see TE override, because short lenght is 348 uS. Total bit lenght is 13 bits, thus key + header in this instance. 
+# Flipper zero testing
+So I tested my script with flipper zero itself, I tried it with Princeton protocol and it seems to work really well, so it is nice to be able to test my recently bought flipper zero for protocol detection and analysis.
+Here is what I tested:
+```
+Filetype: Flipper SubGhz Key File
+Version: 1
+Frequency: 433920000
+Preset: FuriHalSubGhzPresetOok650Async
+Protocol: Princeton
+Bit: 24
+Key: 00 00 00 00 00 52 81 1C
+TE: 154
+```
+And what I got with flipper:
+
+![Flipper](images/Flipper.png)
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/jamisonderek/flipper-zero-tutorials/wiki/Sub-GHz - Flipper zero subghz explanation and protocol definitions
