@@ -75,3 +75,4 @@ And what I got with flipper:
 - https://github.com/breisa/433mhz - inspiration for signal cloning
 # TO DO
 - Maybe add more protocols
+- Decoding in the future...
