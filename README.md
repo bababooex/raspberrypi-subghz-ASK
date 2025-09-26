@@ -72,6 +72,7 @@ And what I got with flipper:
 ![Flipper](images/Flipper.png)
 
 Not sure about the small TE mismatch, but that doesnt really affect function very much.
+However, when cloning signal of some protocol and replaying back, it doesnt get decoded with flipper and flipper saves it as BinRAW. But it will probably work on the device itself, but I dont have anything, like doorbell, to test it yet.
 # External references
 - https://github.com/Zero-Sploit/FlipperZero-Subghz-DB - Flipper zero subghz database
 - https://github.com/jamisonderek/flipper-zero-tutorials/wiki/Sub-GHz - Flipper zero subghz explanation and protocol definitions
