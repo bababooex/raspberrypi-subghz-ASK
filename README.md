@@ -26,7 +26,7 @@ sudo chmod +x menu.sh
 ```
 It will enable pigpiod and throw you to menu, where you can choose some options, like jamming, record/replay etc.
 # Transmitter
-You can use simple ASK TX module, like fs1000a or something similar, I used some random ASK transmitter with two SMD RF transisotrs labeled "2D". I wanted the frequency to be very precise, so I used SAW resonator with label 433.92 meaning 433.92MHz and replaced the previous one. I connected this module data input to GPIO_13 and 5V supply.
+You can use simple ASK TX module, like fs1000a or something similar, I used some random ASK transmitter with two SMD RF transistors labeled "2D". I wanted the frequency to be very precise, so I used SAW resonator with label 433.92 meaning 433.92MHz and replaced the previous one. I connected this module data input to GPIO_13 and 5V supply.
 
 ![TX](images/TX.png)
 
