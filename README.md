@@ -17,7 +17,7 @@ sudo apt-get install python3-matplotlib
 Firstly, you need to clone my repository and navigate to it:
 ```
 git clone https://github.com/bababooex/raspberrypi-subghz-ASK.git
-cd raspberrypi-subghz-ASK
+cd ./raspberrypi-subghz-ASK/Code_file
 ```
 To use the main script, make it executable with chmod and then simply run it with bash.
 ```
