@@ -14,7 +14,12 @@ For plotting, you will need to install matplotlib. On Debian, you can do it via 
 sudo apt-get install python3-matplotlib
 ```
 # Usage
-To use the script, make it executable with chmod and then simply run it with bash.
+Firstly, you need to clone my repository and navigate to it:
+```
+git clone https://github.com/bababooex/raspberrypi-subghz-ASK.git
+cd raspberrypi-subghz-ASK
+```
+To use the main script, make it executable with chmod and then simply run it with bash.
 ```
 sudo chmod +x menu.sh
 ./menu.sh
