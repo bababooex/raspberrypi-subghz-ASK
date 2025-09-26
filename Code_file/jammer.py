@@ -57,7 +57,7 @@ def send_waveform(pi, pin, pulses):
 
 def main():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Usage: python3 jammer.py /path/to/file.sub [gpio_pin]")
+        print("Usage: python3 jammer.py /path/to/file.sub <gpio_pin>")
         sys.exit(1)
 
     sub_path = sys.argv[1]
